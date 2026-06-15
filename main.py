@@ -23,7 +23,7 @@ if platform == "android":
     ])
 
 # ── Importações de processamento ─────────────────────────────────────
-from pdf2image import convert_from_path
+import pypdfium2 as pdfium  # roda em Android (sem Poppler)
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.drawing.spreadsheet_drawing import TwoCellAnchor, AnchorMarker
@@ -54,9 +54,16 @@ ALL_SLOTS = SLOTS_ROW1 + SLOTS_ROW2   # 8 slots
 # PROCESSAMENTO CORE
 # ═══════════════════════════════════════════════════════════════════
 def pdf_to_png(pdf_path: str, tmp_dir: str) -> str:
-    pages = convert_from_path(pdf_path, dpi=200, first_page=1, last_page=1)
+    # Renderiza a 1a pagina do PDF em PNG usando pypdfium2 (compativel com Android)
+    pdf = pdfium.PdfDocument(pdf_path)
+    page = pdf[0]
+    # scale ~2.78 equivale a ~200 DPI (72 * 2.78)
+    bitmap = page.render(scale=200 / 72)
+    pil_img = bitmap.to_pil()
     out = os.path.join(tmp_dir, Path(pdf_path).stem + ".png")
-    pages[0].save(out, "PNG")
+    pil_img.save(out, "PNG")
+    page.close()
+    pdf.close()
     return out
 
 def fit_image_in_slot(img_path: str, slot_w_px: int, slot_h_px: int, tmp_dir: str) -> str:

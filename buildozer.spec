@@ -5,7 +5,7 @@ package.domain = br.app.pedagio
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,xlsx
 version = 1.0.0
-requirements = python3,kivy==2.3.1,pillow,openpyxl
+requirements = python3,kivy==2.3.1,pillow,openpyxl,pypdfium2
 orientation = portrait
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 34
